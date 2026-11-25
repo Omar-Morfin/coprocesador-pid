@@ -23,7 +23,7 @@ project:
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
 pinout:
   # Inputs
- ui[0]: "DATA_IN0"
+  ui[0]: "DATA_IN0"
   ui[1]: "DATA_IN1"
   ui[2]: "DATA_IN2"
   ui[3]: "DATA_IN3"
@@ -33,7 +33,7 @@ pinout:
   ui[7]: "DATA_IN7"
 
   # Outputs
- uo[0]: "CTRL_OUT0"
+  uo[0]: "CTRL_OUT0"
   uo[1]: "CTRL_OUT1"
   uo[2]: "CTRL_OUT2"
   uo[3]: "CTRL_OUT3"
@@ -43,7 +43,7 @@ pinout:
   uo[7]: "CTRL_OUT7"
 
   # Bidirectional pins
-uio[0]: "REG_SEL0"
+  uio[0]: "REG_SEL0"
   uio[1]: "REG_SEL1"
   uio[2]: "REG_SEL2"
   uio[3]: "LOAD_EN"
