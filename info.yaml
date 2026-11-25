@@ -3,7 +3,7 @@ project:
   title:        "Fixed-Point Digital PID Coprocessor"      # Project title
   author:       "Ever Omar Morfin Orozco"      # Your name
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  ""      # One line description of what your project does
+  description:  "8-bit fixed-point PID controller"      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
   clock_hz:     10000000       # Clock frequency in Hz (or 0 if not applicable)
 
