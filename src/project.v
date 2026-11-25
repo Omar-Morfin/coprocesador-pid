@@ -99,10 +99,15 @@ module coprocesador_pid (
     wire signed [12:0] acum_temp;
     wire signed [11:0] nuevo_acum;
 
+    // Extensión de signo automática (mantiene el formato signed para >>>)
+    wire signed [14:0] err_ext;
+    wire signed [14:0] acum_ext;
+    wire signed [14:0] der_ext;
+
     reg  signed [14:0] termino_p;
     reg  signed [14:0] termino_i;
     reg  signed [14:0] termino_d;
-    wire signed [15:0] suma_total;
+    wire signed [16:0] suma_total;
 
     assign error_actual = $signed({2'b00, setpoint}) - $signed({2'b00, medicion});
     assign derivada     = error_actual - error_anterior;
@@ -113,38 +118,42 @@ module coprocesador_pid (
                         (acum_temp < -13'sd1024) ? -12'sd1024 :
                          acum_temp[11:0];
 
-    // Escalado por desplazamiento de bits (sin multiplicadores)
+    assign err_ext  = error_actual;
+    assign acum_ext = nuevo_acum;
+    assign der_ext  = derivada;
+
+    // Escalado por desplazamiento de bits (con signo correcto)
     always @(*) begin
         case (kp)
-            3'd1: termino_p = {{5{error_actual[9]}}, error_actual} >>> 3;
-            3'd2: termino_p = {{5{error_actual[9]}}, error_actual} >>> 2;
-            3'd3: termino_p = {{5{error_actual[9]}}, error_actual} >>> 1;
-            3'd4: termino_p = {{5{error_actual[9]}}, error_actual};
-            3'd5: termino_p = {{5{error_actual[9]}}, error_actual} <<< 1;
-            3'd6: termino_p = {{5{error_actual[9]}}, error_actual} <<< 2;
-            3'd7: termino_p = {{5{error_actual[9]}}, error_actual} <<< 3;
+            3'd1: termino_p = err_ext >>> 3;
+            3'd2: termino_p = err_ext >>> 2;
+            3'd3: termino_p = err_ext >>> 1;
+            3'd4: termino_p = err_ext;
+            3'd5: termino_p = err_ext <<< 1;
+            3'd6: termino_p = err_ext <<< 2;
+            3'd7: termino_p = err_ext <<< 3;
             default: termino_p = 15'sd0;
         endcase
 
         case (ki)
-            3'd1: termino_i = {{3{nuevo_acum[11]}}, nuevo_acum} >>> 3;
-            3'd2: termino_i = {{3{nuevo_acum[11]}}, nuevo_acum} >>> 2;
-            3'd3: termino_i = {{3{nuevo_acum[11]}}, nuevo_acum} >>> 1;
-            3'd4: termino_i = {{3{nuevo_acum[11]}}, nuevo_acum};
-            3'd5: termino_i = {{3{nuevo_acum[11]}}, nuevo_acum} <<< 1;
-            3'd6: termino_i = {{3{nuevo_acum[11]}}, nuevo_acum} <<< 2;
-            3'd7: termino_i = {{3{nuevo_acum[11]}}, nuevo_acum} <<< 3;
+            3'd1: termino_i = acum_ext >>> 3;
+            3'd2: termino_i = acum_ext >>> 2;
+            3'd3: termino_i = acum_ext >>> 1;
+            3'd4: termino_i = acum_ext;
+            3'd5: termino_i = acum_ext <<< 1;
+            3'd6: termino_i = acum_ext <<< 2;
+            3'd7: termino_i = acum_ext <<< 3;
             default: termino_i = 15'sd0;
         endcase
 
         case (kd)
-            3'd1: termino_d = {{4{derivada[10]}}, derivada} >>> 3;
-            3'd2: termino_d = {{4{derivada[10]}}, derivada} >>> 2;
-            3'd3: termino_d = {{4{derivada[10]}}, derivada} >>> 1;
-            3'd4: termino_d = {{4{derivada[10]}}, derivada};
-            3'd5: termino_d = {{4{derivada[10]}}, derivada} <<< 1;
-            3'd6: termino_d = {{4{derivada[10]}}, derivada} <<< 2;
-            3'd7: termino_d = {{4{derivada[10]}}, derivada} <<< 3;
+            3'd1: termino_d = der_ext >>> 3;
+            3'd2: termino_d = der_ext >>> 2;
+            3'd3: termino_d = der_ext >>> 1;
+            3'd4: termino_d = der_ext;
+            3'd5: termino_d = der_ext <<< 1;
+            3'd6: termino_d = der_ext <<< 2;
+            3'd7: termino_d = der_ext <<< 3;
             default: termino_d = 15'sd0;
         endcase
     end
@@ -165,10 +174,10 @@ module coprocesador_pid (
             error_cero     <= (error_actual == 10'sd0);
             error_negativo <= (error_actual < 10'sd0);
 
-            if (suma_total > 16'sd255) begin
+            if (suma_total > 17'sd255) begin
                 salida_control <= 8'd255;
                 saturado       <= 1'b1;
-            end else if (suma_total < 16'sd0) begin
+            end else if (suma_total < 17'sd0) begin
                 salida_control <= 8'd0;
                 saturado       <= 1'b1;
             end else begin
