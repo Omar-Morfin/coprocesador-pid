@@ -32,10 +32,10 @@ async def test_pid_coprocessor(dut):
     dut.rst_n.value = 1
     await ClockCycles(dut.clk, 1)
 
-    # Cargar parámetros: Kp=16 (1.0), Ki=4 (0.25), Kd=4 (0.25), Setpoint=100
-    await load_reg(dut, 0, 16)
-    await load_reg(dut, 1, 4)
-    await load_reg(dut, 2, 4)
+    # Cargar parámetros: Kp=4 (x1.0), Ki=2 (x0.25), Kd=2 (x0.25), Setpoint=100
+    await load_reg(dut, 0, 4)
+    await load_reg(dut, 1, 2)
+    await load_reg(dut, 2, 2)
     await load_reg(dut, 3, 100)
 
     # Simular 20 ciclos de control en lazo cerrado
